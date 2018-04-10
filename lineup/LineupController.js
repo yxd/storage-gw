@@ -28,7 +28,7 @@ router.get('/:id', function (req, res) {
     //retrieve from SIA
     lineup = gw.getLineup(id);
 
-    if(lineup.id) {
+    if(lineup) {
         res.status(200).send(lineup);
     } else {
         res.status(404).send({});
