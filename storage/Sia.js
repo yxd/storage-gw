@@ -65,7 +65,7 @@ Sia.getObject = function(path) {
     } 
 
     //otherwise download from Sia
-    var api = "renter/downloadasync/" + remotePath + "?destination=" + localPath;
+    var api = "/renter/downloadasync/" + remotePath + "?destination=" + localPath;
     Sia.get(api)
         .then(
             function(value) {
