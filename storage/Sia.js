@@ -10,9 +10,9 @@ Sia.get = function(api, params) {
     try {
         const result = gw.call(address, api);
         return result;
-      } catch (e) {
+    } catch (e) {
         console.error('error getting ' + address + api + ' result: ' + e.toString())
-      }
+    }
 }
 
 Sia.post = function(api, reqBody) {
@@ -59,8 +59,13 @@ Sia.getObject = function(path) {
         var content = fs.readFileSync(localPath);
     
         if(content && !expired) {
-            var obj = JSON.parse(content);  
-            return obj;
+            try {
+                var obj = JSON.parse(content);
+                return obj;
+            } catch(e) {
+                console.error(e.message);
+                return {};
+            }
         }
     } 
 
