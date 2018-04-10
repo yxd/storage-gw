@@ -1,9 +1,8 @@
-//import { call } from 'sia.js'
 const gw = require('sia.js');
 const address = 'localhost:9980';
 var Sia = {};
 const localRepo = process.env.LOCAL_REPO || "/cbc/";
-const remoteRepo = process.env.SIA_REPO || "/cbc/";
+const remoteRepo = process.env.REMOTE_REPO || "cbc/";
 const fs = require('fs');
 
 
@@ -32,27 +31,27 @@ Sia.post = function(api, reqBody) {
       }
 }
 
-//Sia.get('/renter/downloadasync/test/story.json?destination=/tmp/test.json').then(function(value) {
-//    console.log(value);
-//});
-
 Sia.saveObject = function(content, path) {
     var localPath = localRepo + path;
-    console.log('contentid=' + content.id);
+    var remotePath = remoteRepo + path;
     var id = content.id;
     //save file to local
     fs.writeFileSync(localRepo + path, JSON.stringify(content));  
 
     //upload to Sia
-    var api = '/renter/upload/' + path + '?source=' + localPath;
-    Sia.post(api, "").then(function(value) {
-        console.log("Uploaded " + path);
-    });
+    var api = '/renter/upload/' + remotePath + '?source=' + localPath;
+    Sia.post(api, "")
+        .then(function(value) {
+            console.log("Uploaded " + remotePath);
+        }).catch(function(err) {
+            console.error("Upload failed: " + err.message);
+        });
 }
 
 Sia.getObject = function(path) {
     var content = {};
     var localPath = localRepo + path;
+    var remotePath = remoteRepo + path;
     //get file from local cache
     //TODO: if cache expired then download from Sia
     var expired = false;
@@ -66,12 +65,15 @@ Sia.getObject = function(path) {
     } 
 
     //otherwise download from Sia
-    var api = "renter/downloadasync/" + path + "?destination=" + localPath;
-    Sia.get(api).then(
-        function(value) {
-            console.log("Downloaded " + path);
-        }
-    )
+    var api = "renter/downloadasync/" + remotePath + "?destination=" + localPath;
+    Sia.get(api)
+        .then(
+            function(value) {
+                console.log("Downloaded " + remotePath);
+            }
+        ).catch(function(err) {
+            console.error("Download failed: " + err.message);
+        });
     return content;
 }
 
