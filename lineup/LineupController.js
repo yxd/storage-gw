@@ -7,9 +7,11 @@ var gw = require('../storage/Sia');
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 
-router.post('/', function (req, res) {
+router.post('/:id', function (req, res) {
     var lineup = req.body;
+    var id = req.params.id;
     if(lineup) {
+        lineup.id = id;
         //save into SIA
         gw.saveLineup(lineup);
 
