@@ -4,7 +4,7 @@ var Sia = {};
 const localRepo = process.env.LOCAL_REPO || "/cbc/";
 const remoteRepo = process.env.REMOTE_REPO || "cbc/";
 const fs = require('fs');
-
+const request = require('request');
 
 Sia.get = function(api) {
     try {
@@ -54,7 +54,7 @@ Sia.saveObject = function(content, path) {
         .then(function(value) {
             Sia.upload(localPath, remotePath);
         }).catch(function(err) {
-            if(err.message =~ /no file/) { //new file
+            if(err.message.match(/no file/)) { //new file
                 Sia.upload(localPath, remotePath);
             } else {
                 console.error(err.message);
@@ -97,6 +97,60 @@ Sia.getObject = function(path) {
             }
         ).catch(function(err) {
             console.error("Download failed: " + err.message);
+
+            if(err.message.match(/no file/)) {
+                if(path.startsWith('content/')) { 
+                    //generate from Polopoly JSON
+                    var id = path.replace('content/', '').replace('.json', '');
+                    if(id) {
+                        request('https://www.cbc.ca/json/cmlink/' + id, { json: true }, (err, res, body) => {
+                            if (err) { 
+                                console.log(err); 
+                            } else {
+                                //convert content JSON
+                                var json = {};
+                                json.id = body.id;
+                                json.title = body.headline;
+                                json.summary = body.summary;
+                                json.type = body.type;
+                                json.publishedAt = parseInt(body.epoch.pubdate);
+                                json.updatedAt = parseInt(body.epoch.lastupdate);
+                                json.body = body.body;
+                                console.log(json);
+                                Sia.saveContent(json);
+                            }
+                        });
+                    }
+                } else if (path.startsWith('lineup/')) {
+                    //generate from Aggregator API
+                    var id = path.replace('lineup/', '').replace('.json', '');
+                    if(id) {
+                        request('https://www.cbc.ca/aggregate_api/v1/items?typeSet=cbc-ocelot&pageSize=10&page=1&source=Polopoly&orderLineupId=' + id, { json: true }, (err, res, body) => {
+                            if (err) { 
+                                console.log(err); 
+                            } else {
+                                var arr = [];
+                                //convert content JSON
+                                for(var i=0; i<body.length; i++) {
+                                    var item = body[i];
+                                    var json = {};
+                                    json.id = item.sourceId;
+                                    json.title = item.title;
+                                    json.summary = item.description;
+                                    json.type = item.type;
+                                    json.publishedAt = item.publishedAt;
+                                    json.updatedAt = item.updatedAt;
+                                    arr.push(json);
+                                }
+                                console.log(arr);
+                                Sia.saveLineup(id, arr);
+                            }
+                        });
+                    }
+                    
+                }
+            }
+
         });
     return content;
 }
