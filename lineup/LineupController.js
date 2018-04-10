@@ -7,11 +7,12 @@ var gw = require('../storage/Sia');
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 
-router.post('/', function (req, res) {
+router.post('/:id', function (req, res) {
     var lineup = req.body;
-    if(lineup.id) {
+    var id = req.params.id;
+    if(lineup && id) {
         //save into SIA
-        gw.saveLineup(lineup);
+        gw.saveLineup(id, lineup);
 
         res.status(200).send(lineup);
         console.log('Posted ' + lineup);
@@ -21,7 +22,7 @@ router.post('/', function (req, res) {
 });
 
 router.get('/:id', function (req, res) {
-    var lineup = {};
+    var lineup = [];
     var id = req.params.id;
     //retrieve from SIA
     lineup = gw.getLineup(id);
@@ -29,7 +30,7 @@ router.get('/:id', function (req, res) {
     if(lineup) {
         res.status(200).send(lineup);
     } else {
-        res.status(404).send({});
+        res.status(404).send([]);
     }
 });
 

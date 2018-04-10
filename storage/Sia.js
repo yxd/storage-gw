@@ -101,9 +101,9 @@ Sia.saveContent = function(content) {
     this.saveObject(content, "content/" + content.id + ".json")
 }
 
-Sia.saveLineup = function(lineup) {
+Sia.saveLineup = function(id, lineup) {
     this.checkDir(localRepo + "lineup/");
-    this.saveObject(lineup, "lineup/" + lineup.id + ".json")
+    this.saveObject(lineup, "lineup/" + id + ".json")
 }
 
 module.exports = Sia;
