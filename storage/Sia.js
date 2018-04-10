@@ -110,7 +110,7 @@ Sia.getObject = function(path) {
                                 //convert content JSON
                                 var json = {};
                                 json.id = body.id;
-                                json.title = body.headline;
+                                json.headline = body.headline;
                                 json.summary = body.summary;
                                 json.type = body.type;
                                 json.publishedAt = parseInt(body.epoch.pubdate);
@@ -136,7 +136,7 @@ Sia.getObject = function(path) {
                                     var json = {};
                                     json.id = item.sourceId;
                                     json.title = item.title;
-                                    json.summary = item.description;
+                                    json.description = item.description;
                                     json.type = item.type;
                                     json.publishedAt = item.publishedAt;
                                     json.updatedAt = item.updatedAt;
