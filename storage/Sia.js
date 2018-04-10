@@ -6,7 +6,7 @@ const remoteRepo = process.env.REMOTE_REPO || "cbc/";
 const fs = require('fs');
 
 
-Sia.get = function(api, params) {
+Sia.get = function(api) {
     try {
         const result = gw.call(address, api);
         return result;
@@ -31,6 +31,17 @@ Sia.post = function(api, reqBody) {
       }
 }
 
+Sia.upload = function(localPath, remotePath) {
+    //upload to remote
+    var api = '/renter/upload/' + remotePath + '?source=' + localPath;
+    this.post(api, "")
+        .then(function(value) {
+            console.log("Uploaded " + remotePath);
+        }).catch(function(err) {
+            console.error("Upload failed: " + err.message);
+        });    
+}
+
 Sia.saveObject = function(content, path) {
     var localPath = localRepo + path;
     var remotePath = remoteRepo + path;
@@ -38,14 +49,22 @@ Sia.saveObject = function(content, path) {
     //save file to local
     fs.writeFileSync(localRepo + path, JSON.stringify(content));  
 
-    //upload to Sia
-    var api = '/renter/upload/' + remotePath + '?source=' + localPath;
-    Sia.post(api, "")
+    //delete from remote
+    this.delete(remotePath)
         .then(function(value) {
-            console.log("Uploaded " + remotePath);
+            Sia.upload(localPath, remotePath);
         }).catch(function(err) {
-            console.error("Upload failed: " + err.message);
+            if(err.message =~ /no file/) { //new file
+                Sia.upload(localPath, remotePath);
+            } else {
+                console.error(err.message);
+            }
         });
+}
+
+Sia.delete = function(path) {
+    var api = '/renter/delete/' + path;
+    return this.post(api, "");
 }
 
 Sia.getObject = function(path) {
@@ -71,7 +90,7 @@ Sia.getObject = function(path) {
 
     //otherwise download from Sia
     var api = "/renter/downloadasync/" + remotePath + "?destination=" + localPath;
-    Sia.get(api)
+    this.get(api)
         .then(
             function(value) {
                 console.log("Downloaded " + remotePath);

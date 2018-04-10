@@ -15,7 +15,7 @@ router.post('/:id', function (req, res) {
         gw.saveLineup(id, lineup);
 
         res.status(200).send(lineup);
-        console.log('Posted ' + lineup);
+        console.log('Posted ' + id);
     } else {
         res.status(400).send({"Error":"Nothing to POST"});
     }
