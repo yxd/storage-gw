@@ -41,8 +41,8 @@ Sia.upload = function(localPath, remotePath) {
         .then(function(value) {
             console.log("Uploaded " + remotePath);
         }).catch(function(err) {
-            console.error("Upload failed: " + err.message);
-        });    
+            console.error("Upload failed for " + remotePath +  " : " + err.message);
+        }); 
 }
 
 Sia.saveObject = function(content, path) {

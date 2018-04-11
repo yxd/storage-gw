@@ -6,6 +6,7 @@ JsonBuilder.buildImage = (image) => {
             "id": image.id,
             "title": image.title,
             "url": image.originalimageurl,
+            "credit": image.credit,
             "description": image.description
         }
     }
@@ -22,15 +23,21 @@ JsonBuilder.buildImageList = (images) => {
 
 JsonBuilder.buildContent = (content) => {
     if(content) {
+        var publishedAt = content.epoch.pubdate? parseInt(content.epoch.pubdate): 0;
+        var updatedAt = content.epoch.lastupdate? parseInt(content.epoch.lastupdate): 0;
+        var author = content.author? content.author: {};
+
         return {
             "id": content.id,
             "headline": content.headline,
             "summary": content.summary,
             "type": content.type,
             "url": content.url,
-            "publishedAt": parseInt(content.epoch.pubdate),
-            "updatedAt": parseInt(content.epoch.lastupdate),
+            "publishedAt": publishedAt,
+            "updatedAt": updatedAt,
             "body": content.body,
+            "byline": content.byline,
+            "author": author,
             "headlineImage": JsonBuilder.buildImage(content.headlineimage),
             "storyImages": JsonBuilder.buildImageList(content.storyimages)
         }
