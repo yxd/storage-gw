@@ -23,8 +23,14 @@ JsonBuilder.buildImageList = (images) => {
 
 JsonBuilder.buildContent = (content) => {
     if(content) {
-        var publishedAt = content.epoch.pubdate? parseInt(content.epoch.pubdate): 0;
-        var updatedAt = content.epoch.lastupdate? parseInt(content.epoch.lastupdate): 0;
+        var publishedAt = 0;
+        var updatedAt = 0;
+
+        if(content.epoch) {
+            publishedAt = parseInt(content.epoch.pubdate);
+            updatedAt = parseInt(content.epoch.lastupdate);
+        }
+
         var author = content.author? content.author: {};
 
         return {
