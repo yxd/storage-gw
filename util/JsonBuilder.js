@@ -1,12 +1,15 @@
 var JsonBuilder = {};
 
 JsonBuilder.buildImage = (image) => {
-    return  {
-        "id": image.id,
-        "title": image.title,
-        "url": image.originalimageurl,
-        "description": image.description
+    if(image) {
+        return  {
+            "id": image.id,
+            "title": image.title,
+            "url": image.originalimageurl,
+            "description": image.description
+        }
     }
+    return {};
 }
 
 JsonBuilder.buildImageList = (images) => {
@@ -18,18 +21,21 @@ JsonBuilder.buildImageList = (images) => {
 }
 
 JsonBuilder.buildContent = (content) => {
-    return {
-        "id": content.id,
-        "headline": content.headline,
-        "summary": content.summary,
-        "type": content.type,
-        "url": content.url,
-        "publishedAt": parseInt(content.epoch.pubdate),
-        "updatedAt": parseInt(content.epoch.lastupdate),
-        "body": content.body,
-        "headlineImage": JsonBuilder.buildImage(content.headlineimage),
-        "storyImages": JsonBuilder.buildImageList(content.storyimages)
+    if(content) {
+        return {
+            "id": content.id,
+            "headline": content.headline,
+            "summary": content.summary,
+            "type": content.type,
+            "url": content.url,
+            "publishedAt": parseInt(content.epoch.pubdate),
+            "updatedAt": parseInt(content.epoch.lastupdate),
+            "body": content.body,
+            "headlineImage": JsonBuilder.buildImage(content.headlineimage),
+            "storyImages": JsonBuilder.buildImageList(content.storyimages)
+        }
     }
+    return {};
 }
 
 JsonBuilder.buildLineupItem = (item) => {
