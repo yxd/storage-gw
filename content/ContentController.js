@@ -20,6 +20,19 @@ router.post('/', function (req, res) {
     }
 });
 
+router.post('/ingest/:id', function (req, res) {
+    var id = req.params.id;
+    if(id) {
+        //save into SIA
+        gw.ingest('content/'+id);
+
+        res.status(200).send({});
+        console.log('Ingested ' + id);
+    } else {
+        res.status(400).send({"Error":"Nothing to POST"});
+    }
+});
+
 router.get('/:id', function (req, res) {
     var content = {};
     var id = req.params.id;
